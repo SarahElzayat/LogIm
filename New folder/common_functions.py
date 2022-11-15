@@ -5,19 +5,22 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import skimage.io as io
+from skimage.morphology import binary_erosion, binary_dilation, binary_closing,skeletonize, thin
 from matplotlib import cm
 from matplotlib.pyplot import bar
 from matplotlib.ticker import FormatStrFormatter, LinearLocator
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 from scipy import fftpack
+from skimage.measure import find_contours
+
+
 # Convolution:
 from scipy.signal import convolve2d
 from skimage.color import rgb2gray, rgb2hsv
 from skimage.exposure import histogram
 from skimage.feature import canny
 # Edges
-from skimage.filters import (median, prewitt, roberts, sobel, sobel_h, sobel_v,
-                             threshold_mean)
+from skimage.filters import median, prewitt, roberts, sobel, sobel_h, sobel_v
 from skimage.util import random_noise
 
 
