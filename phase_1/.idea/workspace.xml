@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d7e6ea73-bbda-43d0-9f82-7be3a4ab784e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../New folder/char_recognition.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../New folder/common_functions.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../New folder/hi_there.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/count_rows.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/count_rows.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/letters_extraction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/letters_extraction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing_file.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing_file.ipynb" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2IVAVFZSl1Wtfjkfjb9fl7nlXOr" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
