@@ -2,3 +2,4 @@
 phase_1/datasets/alphabet/A_Z Handwritten Data.csv
 *.csv
 *.zip
+**/datasets/**
