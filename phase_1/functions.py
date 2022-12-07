@@ -14,9 +14,10 @@ def get_letters(img, show_trace = False):
     tolerance = 0.01 * w 
     # Find the contours
     contours,_ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    
+    if(show_trace):
+        print('contours before area filtering', contours)
     # only keep the contours that are black  and i needed to discard the small parts
-    contours = list(filter(lambda cnt: cv2.contourArea(cnt,True) > 10 , contours))
+    contours = list(filter(lambda cnt: cv2.contourArea(cnt,True)   , contours))
     for cnt in contours:
         print(cv2.contourArea(cnt))
     # sort contours from left to right
