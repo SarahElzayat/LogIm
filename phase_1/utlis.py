@@ -15,20 +15,6 @@ def reorder(myPoints):
 
     return myPointsNew
 
-
-def biggestContour(contours):
-    biggest = np.array([])
-    max_area = 0
-    for i in contours:
-        area = cv2.contourArea(i)
-        if area > 500:
-            peri = cv2.arcLength(i, True)
-            approx = cv2.approxPolyDP(i, 0.02 * peri, True)
-            if area > max_area and len(approx) == 4:
-                biggest = approx
-                max_area = area
-    return biggest,max_area
-
 def drawRectangle(img,biggest,thickness):
     cv2.line(img, (biggest[0][0][0], biggest[0][0][1]), (biggest[1][0][0], biggest[1][0][1]), (0, 255, 0), thickness)
     cv2.line(img, (biggest[0][0][0], biggest[0][0][1]), (biggest[2][0][0], biggest[2][0][1]), (0, 255, 0), thickness)
