@@ -5,3 +5,5 @@ phase_1/datasets/alphabet/A_Z Handwritten Data.csv
 **/datasets/**
 **/saved_models/**
 /phase_1/saved_models
+**/symbols/**
+
