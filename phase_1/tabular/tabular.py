@@ -1,6 +1,8 @@
 class McCluskey:
-    mt=[]
-    dc=[]
+    
+    def __init__(self):
+        self.mt = []
+        self.dc = []
 
     def mul(self,x,y): # Multiply 2 minterms
         res = []
