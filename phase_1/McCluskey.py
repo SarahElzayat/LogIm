@@ -186,9 +186,11 @@ class McCluskey:
                 P.pop(0)
             final_result = [min(P[0],key=len)] # Choosing the term with minimum variables from P
             final_result.extend(self.findVariables(i) for i in EPI) # Adding the EPIs to final solution
-        print('\n\nSolution: F = '+' + '.join(''.join(i) for i in final_result))
+        # print('\n\nSolution: F = '+' + '.join(''.join(i) for i in final_result))
+        
+        return ( 'F = '+' + '.join(''.join(i) for i in final_result))
 
-solver = McCluskey()
-cells = [0,0,0,0,1,0,1,0,0,1,1,1]
-solver.solve(cells,3)
-solver.logic()
+# solver = McCluskey()
+# cells = [0,0,0,0,1,0,1,0,0,1,1,1]
+# solver.solve(cells,3)
+# solver.logic()
