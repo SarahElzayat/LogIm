@@ -1,6 +1,8 @@
 class McCluskey:
-    mt=[]
-    dc=[]
+    
+    def __init__(self):
+        self.mt = []
+        self.dc = []
 
     def mul(self,x,y): # Multiply 2 minterms
         res = []
@@ -88,9 +90,9 @@ class McCluskey:
                     pass
 
     def solve(self,cells,num_col):
-        print('COLS' + str(num_col) )
+        # print('COLS' + str(num_col) )
         
-        print(cells)            
+        # print(cells)            
         i = num_col-1
         mt = 0
         while i < len(cells):
