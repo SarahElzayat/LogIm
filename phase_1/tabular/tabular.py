@@ -187,12 +187,13 @@ class McCluskey:
             POS.append(table[i])
 
         self.getAllSelected(POS,temp,allSelected,0)
-
-        for i in allSelected:
-            if len(i)==min([len(x) for x in allSelected]):
-                if i not in selected_implicants:
-                    selected_implicants.append(i)
-
+        try:
+            for i in allSelected:
+                if len(i)==min([len(x) for x in allSelected]):
+                    if i not in selected_implicants:
+                        selected_implicants.append(i)
+        except:
+            pass
     def getcount(self,mainList):
         '''
 
