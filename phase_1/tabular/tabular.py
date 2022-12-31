@@ -90,12 +90,9 @@ class McCluskey:
                     pass
 
     def solve(self,cells,num_col,num_outputs):
-        num_inputs = num_col - num_outputs
-        num_rows = pow(2,num_inputs)
         minterms = []
-
-        j = 0
-        while j<num_outputs:
+        j = num_outputs-1
+        while j>=0:
             i = num_col-j-1
             mt = 0
             outputmt = []
@@ -105,13 +102,13 @@ class McCluskey:
                 i = i + num_col
                 mt = mt + 1
             minterms.append(outputmt)
-            j = j+1
+            j = j-1
         
         for i in range(len(minterms)):
             self.mt = minterms[i]
-            self.logic()
+            self.logic(i)
 
-    def logic(self):
+    def logic(self,index):
         self.mt.sort()
         minterms = self.mt+self.dc
         minterms.sort()
@@ -204,12 +201,8 @@ class McCluskey:
                 P.pop(0)
             final_result = [min(P[0],key=len)] # Choosing the term with minimum variables from P
             final_result.extend(self.findVariables(i) for i in EPI) # Adding the EPIs to final solution
-        print('\n\nSolution: F = '+' + '.join(''.join(i) for i in final_result))
+        print(f'\n\nSolution: F{index} = '+' + '.join(''.join(i) for i in final_result))
 
 solver = McCluskey()
 cells = [0,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,1,1,0,1,1,0,0,0,1,1,0,1,0,1,1,1,0,0,1,1,1,1,1,1]
 solver.solve(cells,5,2)
-
-# cells = [0,0,0,0,1,1,1,0,1,1,1,1]
-# solver.solve(cells, 3)
-# solver.logic()
