@@ -4,92 +4,8 @@ class McCluskey:
         self.mt = []
         self.dc = []
 
-    def mul(self,x,y): # Multiply 2 minterms
-        res = []
-        for i in x:
-            if i+"'" in y or (len(i)==2 and i[0] in y):
-                return []
-            else:
-                res.append(i)
-        for i in y:
-            if i not in res:
-                res.append(i)
-        return res
-
-    def multiply(self,x,y): # Multiply 2 expressions
-        res = []
-        for i in x:
-            for j in y:
-                tmp = self.mul(i,j)
-                res.append(tmp) if len(tmp) != 0 else None
-        return res
-
-    def refine(self,my_list,dc_list): # Removes don't care terms from a given list and returns refined list
-        res = []
-        for i in my_list:
-            if int(i) not in dc_list:
-                res.append(i)
-        return res
-
-    def findEPI(self,x): # Function to find essential prime implicants from prime implicants chart
-        res = []
-        for i in x:
-            if len(x[i]) == 1:
-                res.append(x[i][0]) if x[i][0] not in res else None
-        return res
-
-    def findVariables(self,x): # Function to find variables in a minterm. For example, the minterm --01 has C' and D as variables
-        var_list = []
-        for i in range(len(x)):
-            if x[i] == '0':
-                var_list.append(chr(i+65)+"'")
-            elif x[i] == '1':
-                var_list.append(chr(i+65))
-        return var_list
-
-    def flatten(self,x): # Flattens a list
-        flattened_items = []
-        for i in x:
-            flattened_items.extend(x[i])
-        return flattened_items
-
-    def findminterms(self,a): #Function for finding out which minterms are merged. For example, 10-1 is obtained by merging 9(1001) and 11(1011)
-        gaps = a.count('-')
-        if gaps == 0:
-            return [str(int(a,2))]
-        x = [bin(i)[2:].zfill(gaps) for i in range(pow(2,gaps))]
-        temp = []
-        for i in range(pow(2,gaps)):
-            temp2,ind = a[:],-1
-            for j in x[0]:
-                if ind != -1:
-                    ind = ind+temp2[ind+1:].find('-')+1
-                else:
-                    ind = temp2[ind+1:].find('-')
-                temp2 = temp2[:ind]+j+temp2[ind+1:]
-            temp.append(str(int(temp2,2)))
-            x.pop(0)
-        return temp
-
-    def compare(self,a,b): # Function for checking if 2 minterms differ by 1 bit only
-        c = 0
-        for i in range(len(a)):
-            if a[i] != b[i]:
-                mismatch_index = i
-                c += 1
-                if c>1:
-                    return (False,None)
-        return (True,mismatch_index)
-
-    def removeTerms(self,_chart,terms): # Removes minterms which are already covered from chart
-        for i in terms:
-            for j in self.findminterms(i):
-                try:
-                    del _chart[j]
-                except KeyError:
-                    pass
-
     def solve(self,cells,num_col,num_outputs):
+        num_inputs = num_col - num_outputs
         minterms = []
         j = num_outputs-1
         while j>=0:
@@ -106,103 +22,271 @@ class McCluskey:
         
         for i in range(len(minterms)):
             self.mt = minterms[i]
-            self.logic(i)
+            prime_implicants, essential_implicants, functions = self.tabulation(num_inputs,min_terms=minterms[i])
+            for j in range(len(functions)):
+                self.printing(functions[j],'+',i)
 
-    def logic(self,index):
-        self.mt.sort()
-        minterms = self.mt+self.dc
-        minterms.sort()
-        size = len(bin(minterms[-1]))-2
-        groups,all_pi = {},set()
-
-        # Primary grouping starts
-        for minterm in minterms:
-            try:
-                groups[bin(minterm).count('1')].append(bin(minterm)[2:].zfill(size))
-            except KeyError:
-                groups[bin(minterm).count('1')] = [bin(minterm)[2:].zfill(size)]
-        # Primary grouping ends
-
+    def printing(self,mainList,char,index):
+        '''Prints a boolean function with variables as a,b,c..
+        
+        Args:
+            mainList: A list of lists. Each list should be a string of the form '1's and '0's representing a term of the funtion.
+            char: It is the character with which two terms are seperated. e.g- '+' or ','
         '''
-        #Primary group printing starts
-        print("\n\n\n\nGroup No.\tMinterms\tBinary of Minterms\n%s"%('='*50))
-        for i in sorted(groups.keys()):
-            print("%5d:"%i) # Prints group number
-            for j in groups[i]:
-                print("\t\t    %-20d%s"%(int(j,2),j)) # Prints minterm and its binary representation
-            print('-'*50)
-        #Primary group printing ends
+        print(f'F{index} = ', end = ' ')
+        for string in mainList:
+            count=-1
+            for i in string:
+                count+=1
+                if i=='0':
+                    print(chr(ord('a')+count)+"'",end="")
+                elif i =="1":
+                    print(chr(ord('a')+count),end="")
+            print("  "+char+"  ",end="")
+        print("\b\b\b \n")
+
+
+    def categorize(self,min_terms,variables):
+        ''' Categorises minterms on the basis of number of '1's
+
+        Args:
+            min_terms: A lsit of min terms. Each item is a binary number string e.g-"1001".
+            variables: The number of variables in the function
+
+        Returns:
+            min_terms_categorized: A dictionary with number of '1's as keys and a list of minterms as values with the same number of '1's as the key.
+        '''
+        min_terms_categorised={}
+        
+        for i in range (variables+1):
+            min_terms_categorised[i]=[]
+
+        for i in min_terms:
+            min_terms_categorised[i.count("1")].append([i,[int(i,2)]])
+
+        return min_terms_categorised
+
+    def check(self,element1,element2):
+        '''Checks if the two terms differ by only one place.
+        
+        Args:
+            element1: A list with first element a string of "1"s and "0"s and "-"s
+            element2: A list with first element a string of "1"s and "0"s and "-"s
+            
+        Returns:
+            False - is terms differ by more than 1
+            A string of "1"s and "0"s and "-"s otherwise.
+        '''
+        count=0
+        combined=[]
+        for i in range (len(element1[0])):
+            combined.append(element1[0][i])
+            if element2[0][i]!=element1[0][i]:
+                combined[i]='-'
+                count+=1
+        if count>1:
+            return False
+        else:
+            return ["".join(combined),element1[1]+element2[1]]
+
+
+    def getPrimeImplicants(self,terms,number,prime_implicants):
         '''
 
-        # Process for creating tables and finding prime implicants starts
-        while True:
-            tmp = groups.copy()
-            groups,m,marked,should_stop = {},0,set(),True
-            l = sorted(list(tmp.keys()))
-            for i in range(len(l)-1):
-                for j in tmp[l[i]]: # Loop which iterates through current group elements
-                    for k in tmp[l[i+1]]: # Loop which iterates through next group elements
-                        res = self.compare(j,k) # Compare the minterms
-                        if res[0]: # If the minterms differ by 1 bit only
-                            try:
-                                groups[m].append(j[:res[1]]+'-'+j[res[1]+1:]) if j[:res[1]]+'-'+j[res[1]+1:] not in groups[m] else None # Put a '-' in the changing bit and add it to corresponding group
-                            except KeyError:
-                                groups[m] = [j[:res[1]]+'-'+j[res[1]+1:]] # If the group doesn't exist, create the group at first and then put a '-' in the changing bit and add it to the newly created group
-                            should_stop = False
-                            marked.add(j) # Mark element j
-                            marked.add(k) # Mark element k
-                m += 1
-            local_unmarked = set(self.flatten(tmp)).difference(marked) # Unmarked elements of each table
-            all_pi = all_pi.union(local_unmarked) # Adding Prime Implicants to global list
-            # print("Unmarked elements(Prime Implicants) of this table:",None if len(local_unmarked)==0 else ', '.join(local_unmarked)) # Printing Prime Implicants of current table
-            if should_stop: # If the minterms cannot be combined further
-                # print("\n\nAll Prime Implicants: ",None if len(all_pi)==0 else ', '.join(all_pi)) # Print all prime implicants
-                break
-            '''
-            # Printing of all the next groups starts
-            print("\n\n\n\nGroup No.\tMinterms\tBinary of Minterms\n%s"%('='*50))
-            for i in sorted(groups.keys()):
-                print("%5d:"%i) # Prints group number
-                for j in groups[i]:
-                    print("\t\t%-24s%s"%(','.join(self.findminterms(j)),j)) # Prints minterms and its binary representation
-                print('-'*50)
-            # Printing of all the next groups ends
-        # Process for creating tables and finding prime implicants ends
-            '''
+        Args:
+            
 
-        # Printing and processing of Prime Implicant chart starts
-        sz = len(str(self.mt[-1])) # The number of digits of the largest minterm
-        chart = {}
-        # print('\n\n\nPrime Implicants chart:\n\n    Minterms    |%s\n%s'%(' '.join((' '*(sz-len(str(i))))+str(i) for i in self.mt),'='*(len(self.mt)*(sz+1)+16)))
-        for i in all_pi:
-            merged_minterms,y = self.findminterms(i),0
-            # print("%-16s|"%','.join(merged_minterms),end='')
-            for j in self.refine(merged_minterms,self.dc):
-                x = self.mt.index(int(j))*(sz+1) # The position where we should put 'X'
-                # print(' '*abs(x-y)+' '*(sz-1)+'X',end='')
-                y = x+sz
-                try:
-                    chart[j].append(i) if i not in chart[j] else None # Add minterm in chart
-                except KeyError:
-                    chart[j] = [i]
-            # print('\n'+'-'*(len(self.mt)*(sz+1)+16))
-        # Printing and processing of Prime Implicant chart ends
+        Returns:
+        
+        '''
+        new_terms={}
+        recursion=0
+        used_terms=[]
+        for i in range (number):
+            new_terms[i]=[]
+        for i in range (number):
+            for element1 in terms[i]:
+                flag=0
+                for element2 in terms[i+1]:
+                        combined=self.check(element1,element2)
+                        if combined:
+                            recursion=1
+                            flag=1
+                            new_terms[i].append(combined)
+                            if element1[0] not in used_terms:
+                                used_terms.append(element1[0])
+                            if element2[0] not in used_terms:
+                                used_terms.append(element2[0 ])
 
-        EPI = self.findEPI(chart) # Finding essential prime implicants
-        # print("\nEssential Prime Implicants: "+', '.join(str(i) for i in EPI))
-        self.removeTerms(chart,EPI) # Remove EPI related columns from chart
+                if flag==0:
+                    if element1[0] not in used_terms and element1[0] not in [x[0] for x in prime_implicants]:
+                        prime_implicants.append(element1)
 
-        if(len(chart) == 0): # If no minterms remain after removing EPI related columns
-            final_result = [self.findVariables(i) for i in EPI] # Final result with only EPIs
-        else: # Else follow Petrick's method for further simplification
-            P = [[self.findVariables(j) for j in chart[i]] for i in chart]
-            while len(P)>1: # Keep multiplying until we get the SOP form of P
-                P[1] = self.multiply(P[0],P[1])
-                P.pop(0)
-            final_result = [min(P[0],key=len)] # Choosing the term with minimum variables from P
-            final_result.extend(self.findVariables(i) for i in EPI) # Adding the EPIs to final solution
-        print(f'\n\nSolution: F{index} = '+' + '.join(''.join(i) for i in final_result))
+        for i in terms[number]:
+            if i[0] not in used_terms and i[0] not in [x[0] for x in prime_implicants]:
+                prime_implicants.append(i)
+
+        if not recursion:
+            return
+        else:
+            self.getPrimeImplicants(new_terms,number-1,prime_implicants)
+
+
+    def getEssential(self,table,essential_implicants):
+        '''
+
+        Args:
+            
+
+        Returns:
+        
+        '''
+
+        for i in [x for x in table if len(table[x])==1]:
+            if table[i][0] not in essential_implicants:
+                essential_implicants.append(table[i][0])
+            del table[i]
+
+
+    def getAllSelected(self,POS,temp,allSelected,index):
+        '''
+
+        Args:
+            
+
+        Returns:
+        
+        '''
+        if index==len(POS):
+            temp1=temp+[]
+            allSelected.append(temp1)
+            return
+        else:
+            for i in POS[index]:
+                if i not in temp:
+                    temp.append(i)
+                    self.getAllSelected(POS,temp,allSelected,index+1)
+                    temp.remove(i)
+                else:
+                    self.getAllSelected(POS,temp,allSelected,index+1)
+
+
+    def petrickMethod(self,table,selected_implicants):
+        '''
+
+        Args:
+            
+
+        Returns:
+        
+        '''
+        temp=[]
+        POS=[]
+        allSelected=[]
+        for i in table:
+            POS.append(table[i])
+
+        self.getAllSelected(POS,temp,allSelected,0)
+
+        for i in allSelected:
+            if len(i)==min([len(x) for x in allSelected]):
+                if i not in selected_implicants:
+                    selected_implicants.append(i)
+
+    def getcount(self,mainList):
+        '''
+
+        Args:
+            
+
+        Returns:
+        
+        '''
+        count =0
+        for string in [x[0] for x in mainList]:
+            for i in string:
+                if i=='0' or i=='1':
+                    count+=1
+
+        return count
+
+    def getminimal(self,selected_implicants):
+        '''
+
+        Args:
+            
+
+        Returns:
+        
+        '''
+        minimal_implicants=[]
+        minimum=999999
+        for i in selected_implicants:
+            if self.getcount(i)<minimum:
+                minimum=self.getcount(i)
+
+        for i in selected_implicants:
+            if self.getcount(i)==minimum:
+                minimal_implicants.append(i)
+
+        return minimal_implicants
+
+    def minimalize(self,prime_implicants,min_terms_categorised):
+        '''
+
+        Args:
+            
+
+        Returns:
+        
+        '''
+        selected_implicants=[]
+        table={}
+        essential_implicants=[]
+        for i,j in min_terms_categorised.items():
+            for k in j:
+                table[k[1][0]]=[]
+
+        for i in prime_implicants:
+            for j in i[1]:
+                table[j].append(i)
+
+        self.getEssential(table,essential_implicants)
+
+        for i in essential_implicants:
+            for j in i[1]:
+                if j in [x for x in table]:
+                    del table[j]
+
+        self.petrickMethod(table,selected_implicants)
+        minimal_implicants=self.getminimal(selected_implicants)
+        
+        return essential_implicants, minimal_implicants
+
+
+    def tabulation(self,variables, min_terms):
+        prime_implicants = []
+        functions = []
+
+        min_terms=[bin(int(x))[2:].zfill(variables) for x in min_terms]
+        min_terms_categorised = self.categorize(min_terms,variables)
+
+        self.getPrimeImplicants(min_terms_categorised,variables,prime_implicants)	
+        essential_implicants,selected_implicants = self.minimalize(prime_implicants,min_terms_categorised)
+
+        for i in selected_implicants:
+            functions.append( essential_implicants+i )
+
+
+        prime_implicants = [x[0] for x in prime_implicants]
+        essential_implicants = [x[0] for x in essential_implicants]
+
+        for i in range (len(functions)):
+            functions[i] = [x[0] for x in functions[i]]
+
+        return prime_implicants, essential_implicants, functions
+
 
 solver = McCluskey()
-cells = [0,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,1,1,0,1,1,0,0,0,1,1,0,1,0,1,1,1,0,0,1,1,1,1,1,1]
-solver.solve(cells,5,2)
+cells = [0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1]
+solver.solve(cells,6,3)
