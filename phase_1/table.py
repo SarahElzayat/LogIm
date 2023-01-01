@@ -546,12 +546,6 @@ def set_value(selection):
     """ selects the corresponding radio button, selects nothing if no corresponding radio button """
     radio_button_var.set(selection)
 
-def convert():
-    if (get_value=='t2e'):
-        
-    else:
-
-
 if __name__ == "__main__":
     try:
         from Tkinter import Tk
@@ -580,7 +574,7 @@ if __name__ == "__main__":
     btn = customtkinter.CTkButton(frame, text="exit", command=lambda:exit())
     btn.grid(row=1, column=2, padx=10, pady=10)
 
-    btn = customtkinter.CTkButton(frame, text="convert" command= convert)
+    btn = customtkinter.CTkButton(frame, text="convert")
     btn.grid(row=1, column=3, padx=10, pady=10)
 
     lbl2=customtkinter.CTkLabel(frame, text="")
