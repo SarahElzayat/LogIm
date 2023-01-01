@@ -13,7 +13,6 @@ conda install pip
 pip install opencv-python
 pip install truth-table-generator
 pip install ipynb
-pip install customtkinter
 pip install image
 
 ```
@@ -22,7 +21,7 @@ pip install image
 
 Navigate to final_integration.py
 
-Run all cells 
+Run all cells
 
 Create a new cell containing the code below
 
