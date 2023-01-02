@@ -25,15 +25,6 @@ except ImportError:
     
 OS = platform.system()
 
-def browser():
-    filename=customtkinter.filedialog.askopenfilename(initialdir=os.getcwd(), filetype=(("JPG File","*.jpg"),("PNG File","*.png")))
-    img=Image.open(filename)
-    img = img.resize((250,400))
-    img=ImageTk.PhotoImage(img)
-    lbl.configure(image=img)
-    lbl.image=img
-    lbl.grid(row=3, column=4, padx=10, pady=10,columnspan=2,rowspan=2)
-
 class Mousewheel_Support(object):    
 
     # implemetation of singleton pattern
@@ -538,6 +529,7 @@ class Table(Frame):
     def on_change_data(self, callback):
         self._on_change_data = callback
 
+
 def get_value():
     """ returns selected value as a string, returns an empty string if nothing selected """
     return radio_button_var.get()
@@ -546,48 +538,56 @@ def set_value(selection):
     """ selects the corresponding radio button, selects nothing if no corresponding radio button """
     radio_button_var.set(selection)
 
-if __name__ == "__main__":
-    try:
-        from Tkinter import Tk
-    except ImportError:
-        from tkinter import Tk
-    lst = Truths(['A', 'B', 'C','D','E'], ['A and B and C and D and E']).as_pandas().values.tolist()
-    customtkinter.set_appearance_mode("dark")
+filename = ''
+def browser():
+    global filename
+    filename=customtkinter.filedialog.askopenfilename(initialdir=os.getcwd(), filetype=(("JPG File","*.jpg"),("PNG File","*.png")))
+    print(filename)
+    img=Image.open(filename)
+    img = img.resize((250,400))
+    img=ImageTk.PhotoImage(img)
+    lbl.configure(image=img)
+    lbl.image=img
+    lbl.place(anchor='center', relx=0.5, rely=0.5)
 
-    root = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master = root)
-    frame.pack(pady=20, padx=60, fill="both", expand=True)
-
-    tframe = customtkinter.CTkFrame(master = frame,width=250,height=400)
-    tframe.grid(row = 2 ,column = 0 ,columnspan=3,rowspan=5)
-    
-    table = Table(tframe, ['A', 'B', 'C'], column_minwidths=[None, None, None])
+def convert(root):
+    global values
+    global header 
+    global filename
+    img = cv2.imread(filename)
+    print(filename)
+    print('tframe',tframe)
+    values,header = solve_expression(img)
+    print(values)
+    table = Table(root,header, column_minwidths=[None, None, None])
     table.pack(padx=10,pady=10)
+    values = values.tolist()
+    table.set_data(values)
 
-    table.set_data([[1,2,3],[4,5,6], [7,8,9], [10,11,12], [13,14,15],[15,16,18], [19,20,21],[1,2,3],[4,5,6], [7,8,9], [10,11,12], [13,14,15],[15,16,18], [19,20,21]])
-    table.cell(0,0, " a fdas fasd fasdf asdf asdfasdf asdf asdfa sdfas asd sadf ")
+customtkinter.set_appearance_mode("dark")
+root = customtkinter.CTk()
 
+tframe = customtkinter.CTkFrame(master = root,width=250,height=400)
+tframe.grid(row = 0 ,column = 0 ,columnspan=2,padx=10,pady=10)
 
-    btn = customtkinter.CTkButton(frame, text="select image", command=browser)
-    btn.grid(row=1, column=1, padx=10, pady=10)
+iframe = customtkinter.CTkFrame(master = root,width=250,height=400)
+iframe.grid(row = 0 ,column = 2 ,columnspan=2,padx=10,pady=10)
 
-    btn = customtkinter.CTkButton(frame, text="exit", command=lambda:exit())
-    btn.grid(row=1, column=2, padx=10, pady=10)
+cframe = customtkinter.CTkFrame(master = root,width=500,height=50)
+cframe.grid(row = 1 ,column = 0 ,columnspan=4,padx=10,pady=10)
 
-    btn = customtkinter.CTkButton(frame, text="convert")
-    btn.grid(row=1, column=3, padx=10, pady=10)
-
-    lbl2=customtkinter.CTkLabel(frame, text="")
-
-    lbl=customtkinter.CTkLabel(frame, text="")
-
-    radio_button_var = customtkinter.StringVar(value="t2e")
-    radio_button_1 = customtkinter.CTkRadioButton(frame, text="table to expression", value="t2e", variable=radio_button_var)
-    radio_button_1.grid(row=1, column=4, padx=10, pady=10,columnspan=2)
-    radio_button_2 = customtkinter.CTkRadioButton(frame, text="expression to table", value="e2t", variable=radio_button_var)
-    radio_button_2.grid(row=2, column=4, padx=10, pady=10,columnspan=2)
-
-    progressbar = customtkinter.CTkProgressBar(master=frame,orientation='vertical',width=5,height=500)
-    progressbar.set(1)
-    progressbar.place(relx=0.5, rely=0.75, anchor=customtkinter.CENTER)
-    root.mainloop()
+btn = customtkinter.CTkButton(cframe, text="select image", command=browser)
+btn.grid(row=1, column=1, padx=10, pady=10)
+btn = customtkinter.CTkButton(cframe, text="exit", command=lambda:exit())
+btn.grid(row=1, column=2, padx=10, pady=10)
+btn = customtkinter.CTkButton(cframe, text="convert",command=lambda:convert(tframe))
+btn.grid(row=1, column=3, padx=10, pady=10)
+entry = customtkinter.CTkEntry(master=cframe, placeholder_text="enter table num")
+entry.grid(row=2, column=1, padx=10, pady=10)
+radio_button_var = customtkinter.StringVar(value="t2e")
+radio_button_1 = customtkinter.CTkRadioButton(cframe, text="table to expression", value="t2e", variable=radio_button_var)
+radio_button_1.grid(row=2, column=2, padx=10, pady=10)
+radio_button_2 = customtkinter.CTkRadioButton(cframe, text="expression to table", value="e2t", variable=radio_button_var)
+radio_button_2.grid(row=2, column=3, padx=10, pady=10)
+lbl=customtkinter.CTkLabel(iframe, text="")
+root.mainloop()

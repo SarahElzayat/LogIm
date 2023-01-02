@@ -5,6 +5,7 @@ class McCluskey:
         self.dc = []
 
     def solve(self,cells,num_col,num_outputs):
+        results=[]
         num_inputs = num_col - num_outputs
         minterms = []
         j = num_outputs-1
@@ -24,7 +25,9 @@ class McCluskey:
             self.mt = minterms[i]
             prime_implicants, essential_implicants, functions = self.tabulation(num_inputs,min_terms=minterms[i])
             for j in range(len(functions)):
-                self.printing(functions[j],'+',i)
+                results.append(self.printing(functions[j],'+',i))
+        print('taular',results)
+        return results
 
     def printing(self,mainList,char,index):
         '''Prints a boolean function with variables as a,b,c..
@@ -33,17 +36,21 @@ class McCluskey:
             mainList: A list of lists. Each list should be a string of the form '1's and '0's representing a term of the funtion.
             char: It is the character with which two terms are seperated. e.g- '+' or ','
         '''
-        print(f'F{index} = ', end = ' ')
+        output = f'F{index} = ' 
         for string in mainList:
             count=-1
             for i in string:
                 count+=1
                 if i=='0':
-                    print(chr(ord('a')+count)+"'",end="")
+                    output += chr(ord('a')+count)+"'"
                 elif i =="1":
-                    print(chr(ord('a')+count),end="")
-            print("  "+char+"  ",end="")
-        print("\b\b\b \n")
+                    output += chr(ord('a')+count)
+            output += "  "+char+"  "
+        output = output[:len(output)-5]
+        print(output)
+        return output
+
+
 
 
     def categorize(self,min_terms,variables):
@@ -289,5 +296,5 @@ class McCluskey:
 
 
 solver = McCluskey()
-cells = [0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1]
-solver.solve(cells,6,3)
+cells = [0,0,1,0,1,1,1,0,1,1,1,0]
+solver.solve(cells,3,1)
