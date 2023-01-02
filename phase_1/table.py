@@ -1,7 +1,7 @@
 try:
     from tkinter import Frame, Label, Message, StringVar, Canvas
     from tkinter.ttk import Scrollbar
-    from Tkconstants import *
+    # from Tkconstants import *
     import platform
     import functools
     fp = functools.partial
