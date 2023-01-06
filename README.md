@@ -1,5 +1,6 @@
-    ![1673004627696](image/README/1673004627696.png)
-
+<div align=center >
+<img align="center"  src="https://github.com/SarahElzayat/LogIm/blob/main/assets/logo.png">
+   </div>
 
 # Description
 
