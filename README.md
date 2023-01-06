@@ -7,7 +7,7 @@
 LogIm is an application that allows you to get the truth table of a logical expression, or the corresponding logical expression of a given truth table, only by taking a picture of it! 
 
 # Technologies
-
+Classical image processing techniques and machine learning were used.
 ![1673003199368](image/README/1673003199368.png)
 
 # Installation
